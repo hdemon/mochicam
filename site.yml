@@ -1,5 +1,14 @@
 - hosts: raspberry-pi
+  remote_user: pi
+  become: yes
+  gather_facts: yes
+  vars:
+    REBOOT: yes
+    UPDATE: yes
+    hostname: "mochicam"
+    locale: "ja_JP.UTF-8"
+    timezone: "Asia/Tokyo"
   roles:
-    - apt
-    - sys
-    - wordpress
+    - system
+    - nginx
+    - rtmp-streaming

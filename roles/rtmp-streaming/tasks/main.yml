@@ -1,0 +1,30 @@
+---
+- name: Update all packages
+  apt:
+    upgrade: dist
+
+- name: Install necessary apt packages
+  vars:
+    packages:
+      - ffmpeg
+  apt:
+    name: '{{ item }}'
+    state: present
+    update_cache: yes
+  loop: '{{ packages }}'
+
+- name: Put a launcher
+  file:
+    src: files/launch-streamer.sh
+    dest: /opt/launch-streamer.sh
+
+- name: Put a service file
+  file:
+    src: files/rtmp-streamer.service
+    dest: /etc/systemd/system/rtmp-streamer.service
+
+- name: Enable this service
+  systemd:
+    name: rtmp-streamer
+    state: started
+    enabled: yes

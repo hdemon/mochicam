@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+
+<body>
+  <video id="video" controls width="100%"></video>
+  <script>
+    if(Hls.isSupported()) {
+      const video = document.getElementById('video');
+      const hls = new Hls();
+      hls.loadSource('live/hls/stream.m3u8');
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED,function() {
+      video.play();
+    });
+   }
+  </script>
+<p>
+  iPhoneなどで再生されない場合は、<a href="live/hls/stream.m3u8">こちら</a>をクリック。
+</p>
+</body>
+</html>

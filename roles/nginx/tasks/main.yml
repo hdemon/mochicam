@@ -1,0 +1,45 @@
+---
+- name: update all packages
+  apt:
+    upgrade: dist
+
+- name: install apt packages
+  vars:
+    packages:
+      - nginx
+      - libnginx-mod-rtmp
+  apt:
+    name: '{{ item }}'
+    state: present
+    update_cache: yes
+  loop: '{{ packages }}'
+
+- name: Apply Nginx template
+  template:
+    src: templates/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  notify: Restart Nginx
+
+- name: Put a conf for the viewer
+  template:
+    src: templates/default.conf.j2
+    dest: /etc/nginx/conf.d/default.conf
+  notify: Restart Nginx
+
+- name: Put a conf for the rtmp module
+  template:
+    src: templates/rtmp.j2
+    dest: /etc/nginx/conf.d/rtmp
+  notify: Restart Nginx
+
+- name: Copy website files to the server's document root
+  template:
+    src: templates/index.html.j2
+    dest: /var/www/html/index.html
+    mode: preserve
+
+- name: Allow all access to tcp port 80
+  ufw:
+    rule: allow
+    port: '80'
+    proto: tcp

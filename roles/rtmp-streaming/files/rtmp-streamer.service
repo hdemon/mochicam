@@ -1,0 +1,12 @@
+#/etc/systemd/system/hello.service
+
+[Unit]
+Description = rtmp-streamer
+
+[Service]
+ExecStart = /opt/rtmp-streamer.sh
+Restart = always
+Type = simple
+
+[Install]
+WantedBy = multi-user.target

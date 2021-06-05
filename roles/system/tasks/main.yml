@@ -1,0 +1,87 @@
+---
+- name: upgrade all packages
+  apt:
+    name: '*'
+    state: latest
+
+- name: update all packages
+  apt:
+    upgrade: dist
+
+- name: Install apt packages
+  vars:
+    packages:
+      - ufw
+  apt:
+    name: '{{ item }}'
+    state: present
+  loop: '{{ packages }}'
+
+- name: Update raspi-config itself
+  become: true
+  apt:
+    name: raspi-config
+    update_cache: yes
+    state: present
+    cache_valid_time: 3600
+  when: UPDATE == True
+
+- name: Get Raspberry Pi type
+  shell: "raspi-config nonint get_pi_type"
+  register: pi_type
+  changed_when: False
+
+- name: Show pi version
+  debug:
+    msg: "Pi version: {{ pi_type.stdout }}"
+
+# # ansible-vault and user module ??
+# - name: Change user password
+#   shell: "(echo '{{ NEWPASSWORD }}' ; echo '{{ NEWPASSWORD }}') | passwd {{ USER }}"
+- name: Get hostname
+  shell: "raspi-config nonint get_hostname"
+  register: pi_hostname
+  changed_when: yes
+
+- name: Print current hostname
+  debug:
+    msg: "Current hostname: {{ pi_hostname.stdout }}"
+
+- name: Change hostname
+  shell: "raspi-config nonint do_hostname {{ hostname }}"
+  when: pi_hostname.stdout != hostname
+
+- name: Change locale
+  shell: "raspi-config nonint do_change_locale {{ locale }}"
+
+- name: Change timezone
+  shell: "raspi-config nonint do_change_timezone {{ timezone }}"
+
+- name: Get camera status
+  shell: "raspi-config nonint get_camera"
+  register: camera_status
+  changed_when: yes
+
+- name: Enable Camera
+  shell: "raspi-config nonint do_camera 0"
+  when: camera_status.stdout != '0'
+
+- name: Manage status of services
+  vars:
+    services:
+      - { name: bluetooth, enabled: no, state: stopped }
+  service:
+    name: '{{ item.name }}'
+    enabled: '{{ item.enabled }}'
+    state: '{{ item.state }}'
+  with_items: '{{ services }}'
+
+# #REBOOT
+- name: Reboot
+  become: True
+  shell: "sleep 1 && shutdown -r now +1"
+  async: 1
+  poll: 0
+  notify:
+    - wait-for-reboot
+  when: REBOOT == True
