@@ -4,7 +4,7 @@
 Description = rtmp-streamer
 
 [Service]
-ExecStart = /opt/rtmp-streamer.sh
+ExecStart = /opt/launch-rtmp-streamer.sh
 Restart = always
 Type = simple
 

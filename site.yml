@@ -8,7 +8,9 @@
     hostname: "mochicam"
     locale: "ja_JP.UTF-8"
     timezone: "Asia/Tokyo"
+    new_relic_license_key: eu01xxa713a2dfaf9f70d7ef804c97b50817NRAL
   roles:
-    - system
-    - nginx
-    - rtmp-streaming
+    # - system
+    # - nginx
+    # - rtmp-streaming
+    - new_relic

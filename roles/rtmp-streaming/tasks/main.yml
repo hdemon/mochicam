@@ -14,14 +14,16 @@
   loop: '{{ packages }}'
 
 - name: Put a launcher
-  file:
-    src: files/launch-streamer.sh
-    dest: /opt/launch-streamer.sh
+  copy:
+    src: files/launch-rtmp-streamer.sh
+    dest: /opt/launch-rtmp-streamer.sh
+    mode: 755
 
 - name: Put a service file
-  file:
+  copy:
     src: files/rtmp-streamer.service
     dest: /etc/systemd/system/rtmp-streamer.service
+    mode: 755
 
 - name: Enable this service
   systemd:

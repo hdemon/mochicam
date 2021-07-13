@@ -1,0 +1,15 @@
+---
+- name: Get New Relic Infrastructure Agent
+  get_url:
+    url: "http://download.newrelic.com/infrastructure_agent/binaries/linux/arm64/newrelic-infra_linux_1.18.0_arm64.tar.gz"
+    dest: /root
+    mode: 755
+
+- name: Unzip
+  shell: "tar xvzf /root/newrelic-infra_linux_1.18.0_arm64.tar.gz"
+
+- name: Put license key
+  shell: 'perl -pi -e "s/#license_key=\"\"/license_key=\"{{ new_relic_license_key }}\"/g;" /root/newrelic-infra/config_defaults.sh'
+
+- name: Create the agent’s apt repository
+  shell:  "/root/newrelic-infra/installer.sh"
